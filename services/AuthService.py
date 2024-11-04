@@ -1,60 +1,65 @@
 import time
-from decouple import config
+
 import jwt
+from decouple import config
 
-from models.UsuarioModel import UsuarioLoginModel
-from repositories.UsuarioRepository import buscar_usuario_por_email
-from utils.AuthUtils import verificar_senha
+from dtos.ResponseDTO import ResponseDTO
+from models.UsuarioModel import UsuarioLoginModel, UsuarioModel
+from repositories.UsuarioRepository import UsuarioRepository
+from services.UsuarioService import UsuarioService
+from utils.AuthUtils import AuthUtil
 
-JWT_SECRET= config('JWT_SECRET')
+JWT_SECRET = config('JWT_SECRET')
 
-def gerar_token_JWT(usuario_id:str) -> str:
-    payload ={
-        "usuario_id":usuario_id,
-        "expires":time.time() +1200
-    }
+usuarioRepository = UsuarioRepository()
 
-    token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+authUtil = AuthUtil()
 
-    return token
+usuarioService = UsuarioService()
 
-def decodificar_token_jwt(token:str):
-    try:
-        token_decodificado = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
 
-        if token_decodificado['expires'] >= time.time():
-            return token_decodificado
-        else:
+class AuthService:
+
+    def gerar_token_jwt(self, usuario_id: str) -> str:
+        payload = {
+            "usuario_id": usuario_id,
+            "tempo_expiracao": time.time() + 6000
+        }
+
+        token = jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
+        return token
+
+    def decodificar_token_jwt(self, token: str):
+        try:
+            token_decodificado = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+
+            if token_decodificado["tempo_expiracao"] >= time.time():
+                return token_decodificado
+            else:
+                return None
+        except Exception as erro:
+            print(erro)
             return None
 
-    except Exception as error:
-        print(error)
-        return {
-            "mensagem": "Erro interno no servidor",
-            "dados": str(error),
-            "status": 500
-        }
+    async def login_service(self, usuario: UsuarioLoginModel):
+        usuario_encontrado = await usuarioRepository.buscar_usuario_por_email(usuario.email)
 
-
-async def login_service(usuario: UsuarioLoginModel):
-    usuario_encontrado = await buscar_usuario_por_email(usuario.email)
-
-    if not usuario_encontrado:
-        return {
-            "mensagem": "Usuário ou senha incorretos",
-            "dados": "",
-            "status": 401
-        }
-    else:
-        if verificar_senha(usuario.senha, usuario_encontrado['senha']):
-            return{
-                "mensagem": "Login realizado com sucesso!",
-                "dados": usuario_encontrado,
-                "status": 200
-            }
+        if not usuario_encontrado:
+            return ResponseDTO("E-mail ou Senha incorretos.", "", 401)
         else:
-            return {
-                "mensagem": "Usuário ou senha incorretos",
-                "dados": "",
-                "status": 401
-            }
+            if authUtil.verificar_senha(usuario.senha, usuario_encontrado['senha']):
+                return ResponseDTO("Login realizado com sucesso!", usuario_encontrado, 200)
+            else:
+                return ResponseDTO("E-mail ou Senha incorretos.", "", 401)
+
+    async def buscar_usuario_logado(self, authorization: str) -> UsuarioModel:
+        token = authorization.split(' ')[1]
+        payload = self.decodificar_token_jwt(token)
+
+        resultado_usuario = await usuarioService.buscar_usuario_logado(payload["usuario_id"])
+
+
+        usuario_logado = resultado_usuario.dados
+
+        return usuario_logado
