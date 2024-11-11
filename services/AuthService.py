@@ -12,14 +12,10 @@ from utils.AuthUtils import AuthUtil
 JWT_SECRET = config('JWT_SECRET')
 
 usuarioRepository = UsuarioRepository()
-
 authUtil = AuthUtil()
-
 usuarioService = UsuarioService()
 
-
 class AuthService:
-
     def gerar_token_jwt(self, usuario_id: str) -> str:
         payload = {
             "usuario_id": usuario_id,
@@ -48,7 +44,7 @@ class AuthService:
         if not usuario_encontrado:
             return ResponseDTO("E-mail ou Senha incorretos.", "", 401)
         else:
-            if authUtil.verificar_senha(usuario.senha, usuario_encontrado['senha']):
+            if authUtil.verificar_senha(usuario.senha, usuario_encontrado.senha):
                 return ResponseDTO("Login realizado com sucesso!", usuario_encontrado, 200)
             else:
                 return ResponseDTO("E-mail ou Senha incorretos.", "", 401)
@@ -57,8 +53,7 @@ class AuthService:
         token = authorization.split(' ')[1]
         payload = self.decodificar_token_jwt(token)
 
-        resultado_usuario = await usuarioService.buscar_usuario_logado(payload["usuario_id"])
-
+        resultado_usuario = await usuarioService.buscar_usuario(payload["usuario_id"])
 
         usuario_logado = resultado_usuario.dados
 

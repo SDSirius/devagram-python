@@ -1,8 +1,9 @@
 from datetime import datetime
 from motor import motor_asyncio
 from decouple import config
+from typing import List
 from bson import ObjectId
-from models.PostagemModel import PostagemCriarModel
+from models.PostagemModel import PostagemCriarModel, PostagemModel
 from utils.ConverterUtil import ConverterUtil
 
 MONGODB_URL = config("MONGODB_URL")
@@ -13,7 +14,7 @@ converterUtil = ConverterUtil()
 
 class PostagemRepository:
 
-    async def criar_postagem(self, postagem: PostagemCriarModel, usuario_id) -> dict:
+    async def criar_postagem(self, postagem: PostagemCriarModel, usuario_id) -> PostagemModel:
         postagem_dict = {
             "usuario_id" : ObjectId(usuario_id),
             "legenda": postagem.legenda,
@@ -27,7 +28,7 @@ class PostagemRepository:
 
         return converterUtil.postagem_converter(nova_postagem)
 
-    async def listar_postagens(self):
+    async def listar_postagens(self) -> PostagemModel:
         postagens_encontradas = postagem_collection.aggregate([{
             "$lookup": {
                 "from": "usuario",
@@ -43,15 +44,37 @@ class PostagemRepository:
 
         return postagens
 
+    async def listar_postagens_usuario(self, usuario_id) -> List[PostagemModel]:
+        postagens_encontradas = postagem_collection.aggregate([
+            {
+                "$match":{
+                    "usuario_id": ObjectId(usuario_id)
+                }
+            },
+            {
+                "$lookup":{
+                    "from": "usuario",
+                    "localField": "usuario_id",
+                    "foreignField": "_id",
+                    "as": "usuario"
+                }
+            }
+        ])
+        postagens = []
 
-    async def buscar_postagem(self, id: str)-> dict:
+        async for postagem in postagens_encontradas:
+            postagens.append(converterUtil.postagem_converter(postagem))
+
+        return postagens
+
+
+    async def buscar_postagem(self, id: str) -> PostagemModel:
         postagem = await postagem_collection.find_one({"_id":ObjectId(id)})
 
         if postagem:
             return converterUtil.postagem_converter(postagem)
 
-    async def atualizar_postagem(self, id:str, dados_postagem: dict):
-        print("dados_postagem: " + str(dados_postagem))
+    async def atualizar_postagem(self, id:str, dados_postagem: dict) -> PostagemModel :
         postagem = await postagem_collection.find_one({"_id": ObjectId(id)})
         if postagem:
 

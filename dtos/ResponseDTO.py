@@ -3,6 +3,3 @@ class ResponseDTO:
         self.mensagem = mensagem
         self.dados = dados
         self.status = status
-
-    # def __str__(self):
-    #     return str(self.__dict__)

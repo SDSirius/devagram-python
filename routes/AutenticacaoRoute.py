@@ -11,13 +11,11 @@ async def login(usuario : UsuarioLoginModel = Body(...)):
     resultado = await authService.login_service(usuario)
 
     if not resultado.status == 200:
-        raise HTTPException(status_code=resultado['status'], detail=resultado['mensagem'])
+        raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
 
-    del resultado.dados['senha']
+    del resultado.dados.senha
 
-    token = authService.gerar_token_jwt(resultado.dados['_id'])
-
-    resultado.dados['token'] = token
-
+    token = authService.gerar_token_jwt(resultado.dados.id)
+    resultado.dados.token = token
     return resultado
 

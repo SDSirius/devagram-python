@@ -1,7 +1,9 @@
 from motor import motor_asyncio
 from decouple import config
 from bson import ObjectId
-from models.UsuarioModel import UsuarioCriarModel
+from models.UsuarioModel import UsuarioCriarModel, UsuarioModel
+from repositories.PostagemRepository import postagem_collection
+from services.PostagemService import postagemRepository
 from utils.AuthUtils import AuthUtil
 from utils.ConverterUtil import ConverterUtil
 
@@ -16,27 +18,43 @@ class UsuarioRepository:
 
     async def criar_usuario(self, usuario: UsuarioCriarModel) -> dict:
         usuario.senha = authUtil.gerar_senha_criptografada(usuario.senha)
-        usuario_criado = await usuario_collection.insert_one(usuario.__dict__)
+
+        usuario_dict = {
+            "nome": usuario.nome,
+            'email': usuario.email,
+            "senha": usuario.senha,
+            "seguidores": [],
+            "seguindo": []
+        }
+
+        usuario_criado = await usuario_collection.insert_one(usuario_dict)
         novo_usuario = await usuario_collection.find_one({"_id":usuario_criado.inserted_id})
 
         return converterUtil.usuario_converter(novo_usuario)
 
-    async def listar_usuarios(self):
-        return usuario_collection.find
+    async def listar_usuarios(self, nome):
+        usuarios_encontrados = usuario_collection.find({
+            "nome": {"$regex": nome, "$options":"i"}
+        })
+        usuarios = []
 
-    async def buscar_usuario(self, id: str)-> dict:
+        async for usuario in usuarios_encontrados:
+            usuarios.append(converterUtil.usuario_converter(usuario))
+
+        return usuarios
+
+    async def buscar_usuario(self, id: str) -> UsuarioModel:
         usuario = await usuario_collection.find_one({"_id":ObjectId(id)})
 
         if usuario:
             return converterUtil.usuario_converter(usuario)
 
-    async def buscar_usuario_por_email(self, email:str) -> dict:
+    async def buscar_usuario_por_email(self, email: str) -> UsuarioModel:
         usuario = await usuario_collection.find_one({"email":email})
 
         if usuario:
             return converterUtil.usuario_converter(usuario)
-        else:
-            return None
+
 
     async def atualizar_usuario(self, id:str, dados_usuario: dict, ):
         if "senha" in dados_usuario:
