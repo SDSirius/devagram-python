@@ -10,8 +10,8 @@ class AWSProvider:
 
         s3_client = boto3.client(
             's3',
-            aws_access_key_id=config('AWS_ACCESS_KEY'),
-            aws_secret_access_key=config('AWS_SECRET_KEY'),
+            aws_access_key_id=config('MYAPP_AWS_ACCESS_KEY'),
+            aws_secret_access_key=config('MYAPP_AWS_SECRET_KEY'),
             region_name='sa-east-1'
         )
 

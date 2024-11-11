@@ -9,7 +9,7 @@ from repositories.UsuarioRepository import UsuarioRepository
 from services.UsuarioService import UsuarioService
 from utils.AuthUtils import AuthUtil
 
-JWT_SECRET = config('JWT_SECRET')
+JWT_SECRET = config('MYAPP_JWT_SECRET')
 
 usuarioRepository = UsuarioRepository()
 authUtil = AuthUtil()
