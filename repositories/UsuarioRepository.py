@@ -7,7 +7,7 @@ from services.PostagemService import postagemRepository
 from utils.AuthUtils import AuthUtil
 from utils.ConverterUtil import ConverterUtil
 
-MONGODB_URL = config("MONGODB_URL")
+MONGODB_URL = config("MYAPP_MONGODB_URL")
 cliente = motor_asyncio.AsyncIOMotorClient(MONGODB_URL)
 database = cliente.devagram
 usuario_collection = database.get_collection("usuario")

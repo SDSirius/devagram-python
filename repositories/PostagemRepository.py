@@ -6,7 +6,7 @@ from bson import ObjectId
 from models.PostagemModel import PostagemCriarModel, PostagemModel
 from utils.ConverterUtil import ConverterUtil
 
-MONGODB_URL = config("MONGODB_URL")
+MONGODB_URL = config("MYAPP_MONGODB_URL")
 cliente = motor_asyncio.AsyncIOMotorClient(MONGODB_URL)
 database = cliente.devagram
 postagem_collection = database.get_collection("postagem")
