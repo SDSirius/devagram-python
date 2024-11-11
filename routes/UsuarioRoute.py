@@ -40,9 +40,7 @@ async def rota_criar_usuario(file : UploadFile, usuario: UsuarioCriarModel= Depe
 async def buscar_info_usuario_logado(Authorization:str = Header(default='')):
     try:
         usuario_logado = await authService.buscar_usuario_logado(Authorization)
-        print(usuario_logado)
         resultado = await usuarioService.buscar_usuario(usuario_logado.id)
-
 
         if not resultado.status == 200:
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
@@ -115,9 +113,6 @@ async def atualizar_usuario_logado(Authorization: str = Header(default=''), usua
 async def seguir_desseguir(usuario_id: str, Authorization: str = Header(default='') ):
     try:
         usuario_logado = await authService.buscar_usuario_logado(Authorization)
-        print(usuario_logado.id)
-        print(usuario_id)
-
         if usuario_id == usuario_logado["id"]:
             raise HTTPException(status_code=401, detail="você não pode seguir a si mesmo!")
 
