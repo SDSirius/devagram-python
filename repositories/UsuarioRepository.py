@@ -1,9 +1,8 @@
 from motor import motor_asyncio
 from decouple import config
 from bson import ObjectId
+from typing import List
 from models.UsuarioModel import UsuarioCriarModel, UsuarioModel
-from repositories.PostagemRepository import postagem_collection
-from services.PostagemService import postagemRepository
 from utils.AuthUtils import AuthUtil
 from utils.ConverterUtil import ConverterUtil
 
@@ -16,7 +15,7 @@ authUtil = AuthUtil()
 
 class UsuarioRepository:
 
-    async def criar_usuario(self, usuario: UsuarioCriarModel) -> dict:
+    async def criar_usuario(self, usuario: UsuarioCriarModel) -> UsuarioModel:
         usuario.senha = authUtil.gerar_senha_criptografada(usuario.senha)
 
         usuario_dict = {
@@ -32,7 +31,7 @@ class UsuarioRepository:
 
         return converterUtil.usuario_converter(novo_usuario)
 
-    async def listar_usuarios(self, nome):
+    async def listar_usuarios(self, nome) -> List[UsuarioModel]:
         usuarios_encontrados = usuario_collection.find({
             "nome": {"$regex": nome, "$options":"i"}
         })
@@ -56,7 +55,7 @@ class UsuarioRepository:
             return converterUtil.usuario_converter(usuario)
 
 
-    async def atualizar_usuario(self, id:str, dados_usuario: dict, ):
+    async def atualizar_usuario(self, id:str, dados_usuario: dict, ) -> UsuarioModel:
         if "senha" in dados_usuario:
             dados_usuario['senha'] = authUtil.gerar_senha_criptografada(dados_usuario['senha'])
 

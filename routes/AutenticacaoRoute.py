@@ -6,7 +6,7 @@ from services.AuthService import AuthService
 router = APIRouter()
 authService = AuthService()
 
-@router.post("/", response_description="Rota para autenticar Usuário")
+@router.post("/login", response_description="Rota para autenticar Usuário")
 async def login(usuario : UsuarioLoginModel = Body(...)):
     resultado = await authService.login_service(usuario)
 
