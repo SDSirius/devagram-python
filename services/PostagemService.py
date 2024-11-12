@@ -12,7 +12,7 @@ class PostagemService:
 
     async def cadastrar_postagem(self, postagem, usuario_id):
         try:
-            nova_postagem = await postagemRepository.criar_postagem(postagem, usuario_id)
+            postagem_criada = await postagemRepository.criar_postagem(postagem, usuario_id)
 
             try:
                 caminho_foto = f'files/foto-{datetime.now().strftime("%H%M%S")}.png'
@@ -21,11 +21,11 @@ class PostagemService:
                     arquivo.write(postagem.foto.file.read())
 
                 url_foto = awsProvider.upload_arquivo_s3(
-                    f'fotos-postagem/{nova_postagem.id}.png',
+                    f'fotos-postagem/{postagem_criada.id}.png',
                     caminho_foto
                 )
 
-                nova_postagem = await postagemRepository.atualizar_postagem(nova_postagem.id, {"foto": url_foto})
+                nova_postagem = await postagemRepository.atualizar_postagem(postagem_criada.id, {"foto": url_foto})
                 os.remove(caminho_foto)
 
             except Exception as erro:
@@ -43,7 +43,6 @@ class PostagemService:
 
             for p in postagens:
                 p.total_curtidas = len(p.curtidas)
-                p.total_comentarios = len(p.comentarios)
 
             return ResponseDTO("postagens listadas", postagens, 200)
 
@@ -69,14 +68,14 @@ class PostagemService:
         try:
             postagem_encontrada = await postagemRepository.buscar_postagem(postagem_id)
 
-            if postagem_encontrada["curtidas"].count(usuario_id) > 0:
-                postagem_encontrada["curtidas"].remove(usuario_id)
+            if postagem_encontrada.curtidas.count(usuario_id) > 0:
+                postagem_encontrada.curtidas.remove(usuario_id)
             else:
-                postagem_encontrada["curtidas"].append(ObjectId(usuario_id))
+                postagem_encontrada.curtidas.append(ObjectId(usuario_id))
 
             postagem_atualizada = await postagemRepository.atualizar_postagem(
-                postagem_encontrada["id"],
-                {'curtidas': postagem_encontrada["curtidas"]})
+                postagem_encontrada.id,
+                {'curtidas': postagem_encontrada.curtidas})
 
             return ResponseDTO("Postgem curtida com sucesso!",postagem_atualizada,200 )
 
@@ -87,15 +86,15 @@ class PostagemService:
     async def criar_comentario(self, postagem_id, usuario_id, comentario):
         try:
             postagem_encontrada = await postagemRepository.buscar_postagem(postagem_id)
-            postagem_encontrada["comentarios"].append({
+            postagem_encontrada.comentarios.append({
                 "comentario_id": ObjectId(),
                 "usuario_id": ObjectId(usuario_id),
                 "comentario": comentario 
             })
 
             postagem_atualizada = await postagemRepository.atualizar_postagem(
-                postagem_encontrada["id"],
-                {'comentarios': postagem_encontrada["comentarios"]}
+                postagem_encontrada.id,
+                {'comentarios': postagem_encontrada.comentarios}
             )
 
             return ResponseDTO("Postagem comentada com sucesso!",postagem_atualizada,200 )
@@ -134,7 +133,7 @@ class PostagemService:
                     postagem_encontrada.comentarios.remove(c)
 
             postagem_atualizada = await postagemRepository.atualizar_postagem(
-                postagem_encontrada["id"],
+                postagem_encontrada.id,
                 {'comentarios': postagem_encontrada.comentarios}
             )
 

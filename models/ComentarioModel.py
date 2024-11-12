@@ -9,28 +9,21 @@ class ComentarioModel(BaseModel):
     class Config:
         json_schema_extra = {
             "Comentario": {
-                "usuario": "String",
-                "comentario": "string",
-                "data": "String"
+                "comentario_id": "String",
+                "usuario_id": "string",
+                "comentario": "String"
             }
         }
 
 class ComentarioCriarModel(BaseModel):
     comentario: str = Field(...)
 
-    # class Config:
-    #     json_schema_extra = {
-    #         "Comentario": {
-    #             "comentario": "string"
-    #         }
-    #     }
+    class Config:
+        json_schema_extra = {
+            "Comentario": {
+                "comentario": "string"
+            }
+        }
 
 class ComentarioAtualizarModel(BaseModel):
     comentario: str = Field(...)
-
-    # class Config:
-    #     json_schema_extra = {
-    #         "Comentario": {
-    #             "comentario": "string"
-    #         }
-    #     }

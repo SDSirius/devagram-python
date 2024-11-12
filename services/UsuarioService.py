@@ -24,11 +24,11 @@ class UsuarioService:
                 novo_usuario = await usuarioRepository.criar_usuario(usuario)
                 try:
                     url_foto = awsProvider.upload_arquivo_s3(
-                        f'fotos-perfil/{novo_usuario["id"]}.png',
+                        f'fotos-perfil/{novo_usuario.id}.png',
                         caminho_foto
                     )
 
-                    novo_usuario = await usuarioRepository.atualizar_usuario(novo_usuario["id"], {"foto": url_foto})
+                    novo_usuario = await usuarioRepository.atualizar_usuario(novo_usuario.id, {"foto": url_foto})
 
                 except Exception as erroAws:
                     print("erroAws " + str(erroAws))
@@ -129,12 +129,12 @@ class UsuarioService:
                 usuario_logado_encontrado.seguindo.append(ObjectId(usuario_seguido_id))
 
             await usuarioRepository.atualizar_usuario(
-                usuario_seguido_encontrado["id"],{
+                usuario_seguido_encontrado.id,{
                     "seguidores": usuario_seguido_encontrado.seguidores
                 }
             )
             await usuarioRepository.atualizar_usuario(
-                usuario_logado_encontrado["id"], {
+                usuario_logado_encontrado.id, {
                     'seguindo': usuario_logado_encontrado.seguindo
                 }
             )
