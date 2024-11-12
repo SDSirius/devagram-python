@@ -46,6 +46,7 @@ class UsuarioRepository:
         usuario = await usuario_collection.find_one({"_id":ObjectId(id)})
 
         if usuario:
+            usuario['id'] = str(usuario.pop('_id'))
             return converterUtil.usuario_converter(usuario)
 
     async def buscar_usuario_por_email(self, email: str) -> UsuarioModel:
