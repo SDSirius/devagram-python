@@ -2,7 +2,6 @@ import time
 
 import jwt
 from decouple import config
-
 from dtos.ResponseDTO import ResponseDTO
 from models.UsuarioModel import UsuarioLoginModel, UsuarioModel
 from repositories.UsuarioRepository import UsuarioRepository
@@ -52,7 +51,6 @@ class AuthService:
     async def buscar_usuario_logado(self, authorization: str) -> UsuarioModel:
         token = authorization.split(' ')[1]
         payload = self.decodificar_token_jwt(token)
-
         resultado_usuario = await usuarioService.buscar_usuario(payload["usuario_id"])
 
         usuario_logado = resultado_usuario.dados

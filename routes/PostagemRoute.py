@@ -27,8 +27,8 @@ async def criar_postagem(Authorization:str = Header(default=''), postagem: Posta
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
 
         return resultado
-    except Exception as error:
-        raise error
+    except Exception as erro:
+        raise erro
 
 @router.get(
     '/',
@@ -43,9 +43,9 @@ async def listar_postagens():
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.get(
     '/{usuario_id}',
@@ -61,9 +61,9 @@ async def listar_postagens_usuario(usuario_id: str, Authorization:str = Header(d
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 
 @router.put(
@@ -81,9 +81,9 @@ async def curtir_descurtir_postagem(postagem_id: str, Authorization: str = Heade
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.put(
     '/comentar/{postagem_id}',
@@ -101,9 +101,9 @@ async def comentar_postagem(postagem_id: str, comentario_model: ComentarioCriarM
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.delete(
     '/{postagem_id}',
@@ -121,9 +121,9 @@ async def deletar_postagem(postagem_id: str, Authorization: str = Header(default
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.delete(
     '/{postagem_id}/comentario/{comentario_id}',
@@ -141,9 +141,9 @@ async def deletar_comentario(postagem_id: str, comentario_id:str, Authorization:
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.put(
     '/{postagem_id}/comentario/{comentario_id}',
@@ -161,6 +161,6 @@ async def atualizar_comentario(postagem_id: str, comentario_id:str, Authorizatio
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro

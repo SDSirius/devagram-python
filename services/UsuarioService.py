@@ -35,8 +35,8 @@ class UsuarioService:
 
                 return ResponseDTO("Usuario criado com sucesso",novo_usuario, 201)
 
-        except Exception as error:
-            return ResponseDTO("Erro Interno no servidor", str(error), 500)
+        except Exception as erro:
+            return ResponseDTO("Erro Interno no servidor", str(erro), 500)
 
     async def buscar_usuario(self, id: str):
         try:

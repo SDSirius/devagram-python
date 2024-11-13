@@ -13,12 +13,12 @@ class UsuarioModel(BaseModel):
     email: EmailStr = Field(...)
     senha: str = Field(...)
     foto: str = Field(...)
-    seguidores: List = []
-    seguindo: List = []
-    total_seguidores: int = 0
-    total_seguindo: int = 0
-    postagens: List = []
-    total_postagens: int = 0
+    seguidores: List
+    seguindo: List
+    total_seguidores: int
+    total_seguindo: int
+    postagens: List
+    total_postagens: int
     token: str
 
     def __getitem__(self, item):

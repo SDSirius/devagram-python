@@ -4,18 +4,18 @@ from models.UsuarioModel import UsuarioModel
 class ConverterUtil:
     def usuario_converter(self, usuario):
         return UsuarioModel(
-            id=str(usuario.get("_id", "")),
-            nome=usuario.get("nome", ""),
-            email=usuario.get("email", ""),
-            senha=usuario.get("senha", ""),
-            foto=usuario.get("foto", ""),
-            seguidores=[str(p) for p in usuario.get("seguidores", [])],
-            seguindo=[str(p) for p in usuario.get("seguindo", [])],
-            total_seguidores=usuario.get("total_seguidores", 0),
-            total_seguindo=usuario.get("total_seguindo", 0),
-            postagens=usuario.get("postagens", []),
-            total_postagens=usuario.get("total_postagens", 0),
-            token=usuario.get("token", "")
+            id=str(usuario["_id"]),
+            nome=usuario["nome"],
+            email=usuario["email"],
+            senha=usuario["senha"],
+            foto=usuario["foto"] if "foto" in usuario else "",
+            seguidores=[str(p) for p in usuario["seguidores"]] if "seguidores" in usuario else [],
+            seguindo=[str(p) for p in usuario["seguindo"]] if "seguindo" in usuario else [],
+            total_seguidores= usuario["total_seguidores"] if "total_seguidores" in usuario else 0,
+            total_seguindo=usuario["total_seguindo"] if "total_seguindo" in usuario else 0,
+            postagens=usuario["postagens"] if "postagens" in usuario else [],
+            total_postagens=usuario["total_postagens"] if "total_postagens" in usuario else 0,
+            token=usuario["token"] if "token" in usuario else "",
         )
 
     def postagem_converter(self, postagem):

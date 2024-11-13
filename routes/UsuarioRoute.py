@@ -28,10 +28,12 @@ async def rota_criar_usuario(file : UploadFile, usuario: UsuarioCriarModel= Depe
         if not resultado.status == 201:
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
 
-        return resultado
-    except Exception as error:
+        del resultado.dados.senha
 
-        raise error
+        return resultado
+    except Exception as erro:
+
+        raise erro
 
 @router.get(
     '/me',
@@ -40,7 +42,7 @@ async def rota_criar_usuario(file : UploadFile, usuario: UsuarioCriarModel= Depe
 async def buscar_info_usuario_logado(Authorization:str = Header(default='')):
     try:
         usuario_logado = await authService.buscar_usuario_logado(Authorization)
-        resultado = await usuarioService.buscar_usuario(usuario_logado.id)
+        resultado = await usuarioService.buscar_usuario(usuario_logado['id'])
 
         if not resultado.status == 200:
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
@@ -49,9 +51,9 @@ async def buscar_info_usuario_logado(Authorization:str = Header(default='')):
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.get(
     '/{usuario_id}',
@@ -63,13 +65,14 @@ async def buscar_info_usuario(usuario_id: str):
 
         if not resultado.status == 200:
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
+
         del resultado.dados.senha
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.get(
     '/',
@@ -83,9 +86,9 @@ async def listar_usuarios(nome: str):
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
 
 @router.put(
     '/me',
@@ -94,12 +97,15 @@ async def listar_usuarios(nome: str):
     )
 async def atualizar_usuario_logado(Authorization: str = Header(default=''), usuario_atualizar: UsuarioAtualizarModel = Depends(UsuarioAtualizarModel)):
     try:
+
         usuario_logado = await authService.buscar_usuario_logado(Authorization)
 
         resultado = await usuarioService.atualizar_usuario_logado(usuario_logado.id, usuario_atualizar)
 
         if not resultado.status == 200:
             raise HTTPException(status_code=resultado.status, detail=resultado.mensagem)
+
+        del resultado.dados.senha
 
         return resultado
     except Exception as erro:
@@ -123,6 +129,6 @@ async def seguir_desseguir(usuario_id: str, Authorization: str = Header(default=
 
         return resultado
 
-    except Exception as error:
-        print(error)
-        raise error
+    except Exception as erro:
+        print(erro)
+        raise erro
